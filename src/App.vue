@@ -1,89 +1,95 @@
 <template>
   <div class="container" >
-    <v-row style="margin-left: 3px;margin-right: 3px;" justify="end">
+    <v-row style="margin-left: 3px;margin-right: 3px;" :style="screenWidth < 600 ? 'margin-bottom:0px' : 'margin-bottom:10px'" justify="end" align="center">
       <v-menu  offset-y v-model="menu2" >
         <template v-slot:activator="{ props }">
-          <v-btn v-bind="props" class="menu" :style="buttonStyle">
+          <v-btn v-bind="props" class="menu" :style="buttonStyle" :class="{'button-light': !darkMode, 'button-dark': darkMode}">
             {{ currentLanguage }}
             <img v-if="currentLanguage === 'SK'" :src="require('@/assets/SK.png')" alt="SK Flag" class="flag-icon" style="margin-bottom: 2px;">
             <img v-else :src="require('@/assets/EN.png')" alt="EN Flag" class="flag-icon">
-            <v-icon right>
+            <v-icon right :color="darkMode ? '#D500F9' : 'info'">
               {{ menu2 ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
             </v-icon>
           </v-btn>
         </template>
 
-        <v-list>
-          <v-list-item v-for="(item, index) in languages" :key="index" @click="selectLanguage(item)" >
-            <v-list-item-title class="d-flex align-center">
+        <v-list style="padding: 0px;">
+          <v-list-item v-for="(item, index) in languages" :key="index" @click="selectLanguage(item)" :class="{'button-light': !darkMode, 'button-dark': darkMode}">
+            <v-list-item-title class="d-flex align-center" >
               {{ item.title }} 
               <img :src="require(`@/assets/${item.title}.png`)" alt="Flag" class="flag-icon" style="margin-left: 5px;">
             </v-list-item-title>
           </v-list-item>
         </v-list>
-      </v-menu>       
+      </v-menu>   
+      
+      <div @click="toggleDarkMode" style="cursor: pointer; margin-left: 5px;">
+        <v-icon :style="{ color: darkMode ? 'white' : 'black' }">
+          {{ darkMode ? 'mdi-white-balance-sunny' : 'mdi-weather-night' }}
+        </v-icon>
+      </div>     
     </v-row>
     <v-row class="ma-3">
       <v-col cols="12" lg="5" md="12"   class="inputs">
         <v-row >
           <v-col cols="12">
             <v-row justify="space-between">
-              <v-col cols="5" sm="12"><v-btn variant="elevated" @click="displayOutput" class="spustit">{{ currentLanguage === 'SK' ? 'Spustiť' : 'Visualize' }}<v-icon>mdi-play</v-icon></v-btn></v-col>
+              <v-col cols="5" sm="12"><v-btn variant="elevated" @click="displayOutput" class="spustit" :class="{'button-light-spustit': !darkMode, 'button-dark-spustit': darkMode}"> {{ currentLanguage === 'SK' ? 'Spustiť' : 'Visualize' }}<v-icon>mdi-play</v-icon></v-btn></v-col>
               <v-col cols="4" sm="12">
-                <v-row v-if="screenWidth > 600">
+                <v-row v-if="screenWidth >= 600">
                   <v-col cols="auto">
-                    <v-btn @click="triggerFileInput" variant="elevated" >{{ currentLanguage === 'SK' ? 'Nahrať program' : 'Upload program' }}<v-icon color="info">mdi-upload</v-icon></v-btn>
+                    <v-btn @click="triggerFileInput" variant="elevated" :class="{'button-light': !darkMode, 'button-dark': darkMode}">{{ currentLanguage === 'SK' ? 'Nahrať program' : 'Upload program' }}<v-icon :color="darkMode ? '#D500F9' : 'info'">mdi-upload</v-icon></v-btn>
                     <input type="file" ref="fileInput" @change="handleFileUpload" style="display: none;" />
                   </v-col>
                   <v-col cols="auto">
-                    <v-btn variant="elevated" @click="pasteExample" >{{ currentLanguage === 'SK' ? 'Vložiť príklad' : 'Paste Example' }}</v-btn>
+                    <v-btn variant="elevated" @click="pasteExample" :class="{'button-light': !darkMode, 'button-dark': darkMode}">{{ currentLanguage === 'SK' ? 'Vložiť príklad' : 'Paste Example' }}</v-btn>
                   </v-col>
                   <v-col cols="auto">
-                    <v-btn variant="elevated" @click="showDialog = true, content='content1'" >{{ currentLanguage === 'SK' ? 'Pomocník' : 'Helper' }} <v-icon color="info">mdi-help-circle</v-icon></v-btn>
+                    <v-btn variant="elevated" @click="showDialog = true, content='content1'" :class="{'button-light': !darkMode, 'button-dark': darkMode}">{{ currentLanguage === 'SK' ? 'Pomocník' : 'Help' }} <v-icon :color="darkMode ? '#D500F9' : 'info'">mdi-help-circle</v-icon></v-btn>
                   </v-col>
                   <v-col cols="auto">
                     <v-menu>
                           <template v-slot:activator="{props}">
-                            <v-btn v-bind="props">{{ selectedFontSize }}px<v-icon right color="info">mdi-chevron-down</v-icon></v-btn>
+                            <v-btn v-bind="props" :class="{'button-light': !darkMode, 'button-dark': darkMode}">{{ selectedFontSize }}px<v-icon right :color="darkMode ? '#D500F9' : 'info'">mdi-chevron-down</v-icon></v-btn>
                           </template>
-                          <v-list>
-                            <v-list-item v-for="(item,index1) in fontSizes" :key="index1" @click="updateFontSize(item)">
+                          <v-list style="padding: 0;">
+                            <v-list-item v-for="(item,index1) in fontSizes" :key="index1" @click="updateFontSize(item)" :class="{'button-light': !darkMode, 'button-dark': darkMode}">
                               <v-list-item-title>{{ item }}px</v-list-item-title>
                             </v-list-item>
                           </v-list>
                         </v-menu>
                   </v-col>
                 </v-row>
-                <v-row v-if="screenWidth <= 600">
+                <v-row v-if="screenWidth < 600">
                   <v-col>
                     <v-menu>
                     <template v-slot:activator="{ props }">
                     <v-btn
-                      color="primary"
+                      :class="{'button-light-spustit': !darkMode, 'button-dark-spustit': darkMode}"
                       v-bind="props"
                     >
                       Menu
                     </v-btn>
                   </template>
-                  <v-list>
-                    <v-list-item class="text-center">
+                  <v-list style="padding: 0px;">
+                    <v-list-item class="text-center" :class="{'button-light': !darkMode, 'button-dark': darkMode}">
                       <v-list-item-title style="margin: 10px;">
-                        <v-btn @click="triggerFileInput"  style="width: 100%;">{{ currentLanguage === 'SK' ? 'Nahrať program' : 'Upload program' }}<v-icon>mdi-upload</v-icon></v-btn>
+                        <v-btn @click="triggerFileInput"  style="width: 100%;" :class="{'button-light': !darkMode, 'button-dark': darkMode}">{{ currentLanguage === 'SK' ? 'Nahrať program' : 'Upload program' }}<v-icon :color="darkMode ? '#D500F9' : 'info'">mdi-upload</v-icon></v-btn>
                         <input type="file" ref="fileInput" @change="handleFileUpload" style="display: none;" />
                       </v-list-item-title>
                       <v-list-item-title style="margin: 10px; border: none;">
-                        <v-btn  @click="pasteExample" style="width: 100%;">{{ currentLanguage === 'SK' ? 'Vložiť príklad' : 'Paste example' }}</v-btn>
+                        <v-btn  @click="pasteExample" style="width: 100%;" :class="{'button-light': !darkMode, 'button-dark': darkMode}">{{ currentLanguage === 'SK' ? 'Vložiť príklad' : 'Paste example' }}</v-btn>
                       </v-list-item-title>
                       <v-list-item-title style="margin: 10px; border: none;">
-                        <v-btn  @click="showDialog = true, content='content1'" style="width: 100%;">{{ currentLanguage === 'SK' ? 'Pomocník' : 'Helper' }}<v-icon color="info">mdi-help-circle</v-icon></v-btn>
+                        <v-btn  @click="showDialog = true, content='content1'" style="width: 100%;" :class="{'button-light': !darkMode, 'button-dark': darkMode}">{{ currentLanguage === 'SK' ? 'Pomocník' : 'Help' }}<v-icon :color="darkMode ? '#D500F9' : 'info'">mdi-help-circle</v-icon></v-btn>
                       </v-list-item-title>
                       <v-list-item-title style="margin: 10px; border: none;">
                         <v-menu >
                           <template v-slot:activator="{props}">
-                            <v-btn v-bind="props" style="width: 100%;">{{ selectedFontSize }}px<v-icon right color="info" >mdi-chevron-down</v-icon></v-btn>
+                            <v-btn v-bind="props" style="width: 100%;" :class="{'button-light': !darkMode, 'button-dark': darkMode}">{{ selectedFontSize }}px<v-icon right :color="darkMode ? '#D500F9' : 'info'" >mdi-chevron-down</v-icon></v-btn>
                           </template>
-                          <v-list>
-                            <v-list-item v-for="(item,index1) in fontSizes" :key="index1" @click="updateFontSize(item)">
+                          <v-list style="padding: 0px;">
+                            <v-list-item v-for="(item,index1) in fontSizes" :key="index1" @click="updateFontSize(item)" :class="{'button-light': !darkMode, 'button-dark': darkMode}">
                               <v-list-item-title>{{ item }}px</v-list-item-title>
                             </v-list-item>
                           </v-list>
@@ -97,18 +103,18 @@
                 </v-row>
               </v-col>
             </v-row>
-          </v-col>
-          
+          </v-col>      
           <v-col cols="12">
             <v-row>
               <v-col class="formular" cols="12" sm="3" >
-            <v-combobox
-            v-model="variableName"
-            :items="premenneFetch"
-            :label="currentLanguage === 'SK' ? 'Názov' : 'Name' "
-            outlined
-            :return-object="false"
-          ></v-combobox>
+                <v-combobox
+                v-model="variableName"
+                :items="premenneFetch"
+                :label="currentLanguage === 'SK' ? 'Názov' : 'Name' "
+                outlined
+                :return-object="false"
+                :class="{'button-light': !darkMode, 'inputField-dark': darkMode}"
+              ></v-combobox>
               </v-col>
               <v-col class="formular" cols="12" sm="3" >
                 <v-combobox
@@ -116,27 +122,28 @@
                 :label="currentLanguage === 'SK' ? 'Hodnota' : 'Value' "
                 outlined
                 :return-object="false"
+                :class="{'button-light': !darkMode, 'inputField-dark': darkMode}"
               ></v-combobox>
             
               </v-col>
               <v-col class="formular" cols="12" sm="6" >
-                <v-btn  @click="addVariable2" color="primary" :disabled="!variableName || !variableValue">{{ currentLanguage === 'SK' ? 'Nastaviť hodnotu ' : 'Set variable' }}<br v-if="(screenWidth < 1500 && screenWidth >= 1280) && currentLanguage==='SK'">{{ currentLanguage === 'SK' ? 'premennej' : '' }}</v-btn>
+                <v-btn  @click="addVariable2" :disabled="!variableName || !variableValue" :class="{'buttonPremenne-light': !darkMode, 'button-dark-spustit': darkMode}">{{ currentLanguage === 'SK' ? 'Nastaviť hodnotu ' : 'Set variable' }}<br v-if="(screenWidth < 1500 && screenWidth >= 1280) && currentLanguage==='SK'">{{ currentLanguage === 'SK' ? 'premennej' : '' }}</v-btn>
                 
               </v-col>
             </v-row>
           </v-col>    
           <v-col cols="12" v-if="premenneNaZaciatku[0]">
             <v-row v-for="(prem, indexx) in premenneNaZaciatku" :key="indexx" class="variable_list">
-              <v-col cols="4" sm="3" class="variable rounded-lg" >
+              <v-col cols="4" sm="3" :class="darkMode ? 'variable-dark rounded-lg' : 'variable rounded-lg'" >
                 <td>{{ prem.name }}</td>
               </v-col>
-              <v-col cols="4" sm="3" class="variable rounded-lg">
+              <v-col cols="4" sm="3" :class="darkMode ? 'variable-dark rounded-lg' : 'variable rounded-lg'">
                 <td>{{ prem.value }}</td>
               </v-col>
               <v-col cols="2" sm="3" >
                 <!-- Tlačidlo na odstránenie premennej -->
                 <v-btn icon @click="removeVariable(indexx)" style="height: 30px; width: 30px;">
-                  <v-icon>mdi-close</v-icon>
+                  <v-icon :color="darkMode ? '#D500F9' : ''">mdi-close</v-icon>
                 </v-btn>
               </v-col>
             </v-row>
@@ -152,21 +159,21 @@
           </v-col>
         </v-row>
         <div v-if="currentLanguage === 'SK'">
-          <Pomocnik  v-model="showDialog" :screenWidth="screenWidth"></Pomocnik>
+          <Pomocnik  v-model="showDialog" :screenWidth="screenWidth" :darkmode="darkMode"></Pomocnik>
         </div>
         <div v-if="currentLanguage === 'EN'">
-          <PomocnikEN  v-model="showDialog" :screenWidth="screenWidth"></PomocnikEN>
-        </div>        
+          <PomocnikEN  v-model="showDialog" :screenWidth="screenWidth" :darkmode="darkMode"></PomocnikEN>
+        </div>  
         
-        <MonacoEditor style="margin-top: 20px;" :value="editorValue" @update:ast="handleAst" @update:druhyKrok="handleDruhyKrok" @insert-code="pasteExample"  @insert-code2="handleFileUpload" :font-size="selectedFontSize" :style="heightNastavnieEditor"/>
+        <MonacoEditor style="margin-top: 20px;" :darkMode="darkMode" :value="editorValue" @update:ast="handleAst" @update:druhyKrok="handleDruhyKrok" @insert-code="pasteExample"  @insert-code2="handleFileUpload" :font-size="selectedFontSize" :style="heightNastavnieEditor"/>
         
       </v-col>
       <v-col cols="12" lg="7" md="12" class="outputs" :style="widthChange" v-if="showOutput">
         <v-row>
         <v-col>
-          <v-menu offset-y v-model="menu">
+          <v-menu offset-y v-model="menu" >
             <template v-slot:activator="{ props }">
-              <v-btn color="primary" v-bind="props" class="menu" :style="buttonStyle">
+              <v-btn v-bind="props" class="menu" :style="buttonStyle" :class="{'button-light-spustit': !darkMode, 'button-dark-spustit': darkMode}">
                 {{
                     currentLanguage === 'SK'
                       ? (selectedTitle === 'Preklad kódu' ? 'Preklad kódu' : 
@@ -180,8 +187,8 @@
               </v-btn>
             </template>
 
-            <v-list>
-              <v-list-item v-for="(item, index) in items" :key="index" @click="selectItem(item)">
+            <v-list style="padding: 0;">
+              <v-list-item v-for="(item, index) in items" :key="index" @click="selectItem(item)"  :class="{'button-light': !darkMode, 'button-dark': darkMode}">
                 <v-list-item-title>{{
                 currentLanguage === 'SK'
                   ? (item.title === 'Preklad kódu' ? 'Preklad kódu' : 
@@ -202,26 +209,36 @@
             <v-col >
               <v-row>
                 <v-col  cols="auto" >
-                  <v-btn variant="elevated" v-if="showOutput" @click="hideStepping" :class="!showStepping ? 'showWhole' : 'showPart'" style="margin-right: 10px; padding: 5px;">{{ currentLanguage === 'SK' ? 'Výsledok' : 'Whole Sequence' }}</v-btn>
+                  <v-btn variant="elevated" v-if="showOutput" @click="hideStepping" :class="{
+    'showPartDark': showStepping && darkMode,
+    'showPart': showStepping && !darkMode,
+    'showWholeDark': !showStepping && darkMode,
+    'showWhole': !showStepping && !darkMode
+  }" style="margin-right: 10px; padding: 5px;">{{ currentLanguage === 'SK' ? 'Výsledok' : 'Whole Sequence' }}</v-btn>
                 </v-col>
                 <v-col cols="auto">
-                  <v-btn variant="elevated" style="padding: 5px;" v-if="showOutput" @click="enableStepping" :class="showStepping ? 'showWhole' : 'showPart'">{{ currentLanguage === 'SK' ? 'Krokovať' : 'Step by Step' }}</v-btn>
+                  <v-btn variant="elevated" style="padding: 5px;" v-if="showOutput" @click="enableStepping" :class="{
+    'showPartDark': !showStepping && darkMode,
+    'showPart': !showStepping && !darkMode,
+    'showWholeDark': showStepping && darkMode,
+    'showWhole': showStepping && !darkMode
+  }">{{ currentLanguage === 'SK' ? 'Krokovať' : 'Step by Step' }}</v-btn>
                 </v-col>   
-                <v-col cols="auto"><v-btn variant="elevated" v-if="showOutput" @click="showExportPopup" style="padding:5px;">EXPORT</v-btn></v-col>
+                <v-col cols="auto"><v-btn variant="elevated" v-if="showOutput" @click="showExportPopup" style="padding:5px;" :class="{'button-light': !darkMode, 'button-dark': darkMode}">EXPORT</v-btn></v-col>
               </v-row>
             </v-col>
             <v-col>
               <v-row justify="end">
                 <v-col  cols="auto" >
-                  <v-btn @click="showStack = !showStack" text v-if="showOutput && screenWidth>960 " :disabled="showFullOutput">{{ currentLanguage === 'SK' ? 'Zásobník' : 'Stack' }}<v-icon right color="info">{{showStack ? "mdi-chevron-up" : "mdi-chevron-down"}}</v-icon></v-btn>
-                  <v-btn @click="showStackDialog" text v-if="showOutput && screenWidth<=960 " :disabled="showFullOutput">{{ currentLanguage === 'SK' ? 'Zásobník' : 'Stack' }}<v-icon right color="info">{{showStack ? "mdi-chevron-up" : "mdi-chevron-down"}}</v-icon></v-btn>
+                  <v-btn @click="showStack = !showStack" text v-if="showOutput && screenWidth>960 " :disabled="showFullOutput" :class="{'button-light': !darkMode, 'button-dark': darkMode}">{{ currentLanguage === 'SK' ? 'Zásobník' : 'Stack' }} <v-icon right :color="darkMode ? '#D500F9' : 'info'">{{showStack ? "mdi-chevron-up" : "mdi-chevron-down"}}</v-icon></v-btn>
+                  <v-btn @click="showStackDialog" text v-if="showOutput && screenWidth<=960 " :disabled="showFullOutput" :class="{'button-light': !darkMode, 'button-dark': darkMode}">{{ currentLanguage === 'SK' ? 'Zásobník' : 'Stack' }} <v-icon right :color="darkMode ? '#D500F9' : 'info'">{{showStack ? "mdi-chevron-up" : "mdi-chevron-down"}}</v-icon></v-btn>
                   <v-dialog  v-model="stackDialog" max-width="50%">
-                    <v-card>
+                    <v-card :class="{'backgroundGuessBLack' : darkMode}">
                       <v-card-title class="headline">
                         {{ currentLanguage === 'SK' ? 'Zásobník' : 'Stack' }}
                       </v-card-title>
                       <v-card-text >
-                        <v-table >
+                        <v-table :class="{'backgroundGuessBLack' : darkMode}">
                         <tbody v-if="showStepping">
                           <tr v-for="(item, idx) in zasobnikAStav[currentIndex].split(':')" :key="`stepping-${idx}`">
                             <td >
@@ -233,9 +250,9 @@
                       </v-card-text>
                     </v-card>
                   </v-dialog>
-                  <v-expand-transition>
+                  <v-expand-transition :class="{'backgroundGuessBLack' : darkMode}">
                     <v-card v-if="showOutput && showStack && showStepping" class="flex-shrink-0 text-center"  style="position: absolute; top: 100%;z-index: 5; width: 100px;">
-                      <v-table >
+                      <v-table :class="{'backgroundGuessBLack' : darkMode}">
                         <tbody v-if="showStepping">
                           <tr v-for="(item, idx) in zasobnikAStav[currentIndex].split(':')" :key="`stepping-${idx}`">
                             <td >
@@ -248,15 +265,15 @@
                   </v-expand-transition>
                 </v-col>
                 <v-col  cols="auto">
-                  <v-btn @click="showStates = !showStates" text v-if="showOutput && screenWidth>960">{{ currentLanguage === 'SK' ? 'Stavy' : 'States' }}<v-icon right color="info">{{showStates ? "mdi-chevron-up" : "mdi-chevron-down"}}</v-icon></v-btn>
-                  <v-btn @click="showStateDialog" text v-if="showOutput && screenWidth<=960">{{ currentLanguage === 'SK' ? 'Stavy' : 'States' }} <v-icon right color="info">{{showStates ? "mdi-chevron-up" : "mdi-chevron-down"}}</v-icon></v-btn>
-                  <v-dialog  v-model="stateDialog" max-width="50%">
-                    <v-card>
+                  <v-btn @click="showStates = !showStates" text v-if="showOutput && screenWidth>960" :class="{'button-light': !darkMode, 'button-dark': darkMode}">{{ currentLanguage === 'SK' ? 'Stavy' : 'States' }} <v-icon right :color="darkMode ? '#D500F9' : 'info'">{{showStates ? "mdi-chevron-up" : "mdi-chevron-down"}}</v-icon></v-btn>
+                  <v-btn @click="showStateDialog" text v-if="showOutput && screenWidth<=960" :class="{'button-light': !darkMode, 'button-dark': darkMode}">{{ currentLanguage === 'SK' ? 'Stavy' : 'States' }} <v-icon right :color="darkMode ? '#D500F9' : 'info'">{{showStates ? "mdi-chevron-up" : "mdi-chevron-down"}}</v-icon></v-btn>
+                  <v-dialog  v-model="stateDialog" max-width="50%" >
+                    <v-card :class="{'backgroundGuessBLack' : darkMode}">
                       <v-card-title class="headline">
                         {{ currentLanguage === 'SK' ? 'Stavy' : 'States' }}
                       </v-card-title>
                       <v-card-text >
-                        <v-table >
+                        <v-table :class="{'backgroundGuessBLack' : darkMode}">
                           <tbody >
                             <tr v-for="(state,index6) in filtrovaneStavy" :key="index6">
                                 <td v-if="index6 == 0" >
@@ -271,9 +288,9 @@
                       </v-card-text>
                     </v-card>
                   </v-dialog>
-                  <v-expand-transition>
+                  <v-expand-transition :class="{'backgroundGuessBLack' : darkMode}">
                       <v-card v-if="showOutput && showStates" class="flex-shrink-0"  style="position: absolute; top: 100%; z-index: 5; width: 150px;">
-                        <v-table >
+                        <v-table :class="{'backgroundGuessBLack' : darkMode}">
                           <tbody >
                             <tr v-for="(state,index6) in filtrovaneStavy" :key="index6">
                                 <td v-if="index6 == 0" >
@@ -291,14 +308,14 @@
               </v-row>
             </v-col>
             <v-dialog  v-model="exportDialog" max-width="50%">
-              <v-card >
-                <v-card-title class="headline">
-                  <v-row>
-                    <v-col cols="6">
-                      <v-btn block @click="exportContent = 'content1'">PNG</v-btn>
+              <v-card :class="{'backgroundGuessBLack' : darkMode}">
+                <v-card-title class="headline" >
+                  <v-row >
+                    <v-col cols="6" >
+                      <v-btn block @click="exportContent = 'content1'" :class="{'button-light': !darkMode, 'button-dark': darkMode}">PNG</v-btn>
                     </v-col>
                     <v-col cols="6">
-                      <v-btn block @click="exportContent = 'content2'">Latex</v-btn>
+                      <v-btn block @click="exportContent = 'content2'" :class="{'button-light': !darkMode, 'button-dark': darkMode}">Latex</v-btn>
                     </v-col>
                   </v-row>
                 </v-card-title>
@@ -325,7 +342,7 @@
                       </span> 
                     </div>
                     <h1>{{ currentLanguage === 'SK' ? 'Stavy' : 'States' }}</h1>
-                    <v-table >
+                    <v-table :class="{'backgroundGuessBLack' : darkMode}">
                           <tbody >
                             <tr v-for="(state,index6) in stavy" :key="index6">
                                 <td v-if="index6 == 0" >
@@ -356,27 +373,27 @@
           </v-row>
           <v-row class="controls">
             <v-col cols="auto" class="d-none d-md-flex">
-              <v-btn variant="tonal" v-if="showStepping " @click="previousStep" style="margin-right: 10px; padding: 5px;">{{ currentLanguage === 'SK' ? 'Naspať' : 'Previous' }} <v-icon color="info">mdi-chevron-left</v-icon></v-btn>
-              <v-btn variant="tonal" v-if="showStepping " @click="nextStep" style="margin-right: 10px;padding: 5px;">{{ currentLanguage === 'SK' ? 'Ďalej' : 'Next' }}<v-icon color="info">mdi-chevron-right</v-icon></v-btn>
-              <v-btn variant="elevated" v-if="showOutput && showStepping" @click="toggleGuessing" style="padding: 5px;">{{ currentLanguage === 'SK' ? 'Odhadnúť ďalšiu konfiguráciu' : 'Guess Next Configuration' }}</v-btn>
+              <v-btn variant="tonal" v-if="showStepping " @click="previousStep" style="margin-right: 10px; padding: 5px;" :style="darkMode ? 'color: white;' : 'color:black;'"><v-icon :color="darkMode ? '#D500F9' : 'info'">mdi-chevron-left</v-icon> {{ currentLanguage === 'SK' ? 'Naspať' : 'Previous' }}</v-btn>
+              <v-btn variant="tonal" v-if="showStepping " @click="nextStep" style="margin-right: 10px;padding: 5px;" :style="darkMode ? 'color: white;' : 'color:black;'">{{ currentLanguage === 'SK' ? 'Ďalej' : 'Next' }}<v-icon :color="darkMode ? '#D500F9' : 'info'">mdi-chevron-right</v-icon></v-btn>
+              <v-btn variant="elevated" v-if="showOutput && showStepping " @click="toggleGuessing" style="padding: 5px;" :class="{'button-light': !darkMode, 'button-dark': darkMode}">{{ currentLanguage === 'SK' ? 'Odhadnúť ďalšiu konfiguráciu' : 'Guess Next Configuration' }}</v-btn>
             </v-col>
             <v-col cols="auto" class="d-md-none">
               <v-row>
                 <v-col cols="auto">
-                  <v-btn variant="elevated" v-if="showOutput && showStepping" @click="toggleGuessing" style="margin-right: 10px; padding: 5px;" >{{ currentLanguage === 'SK' ? 'Odhadnúť ďalšiu konfiguráciu' : 'Guess Next Configuration' }}</v-btn>
+                  <v-btn variant="elevated" v-if="showOutput && showStepping" @click="toggleGuessing" style="margin-right: 10px; padding: 5px;" :class="{'button-light': !darkMode, 'button-dark': darkMode}">{{ currentLanguage === 'SK' ? 'Odhadnúť ďalšiu konfiguráciu' : 'Guess Next Configuration' }}</v-btn>
                 </v-col>
                 <v-col cols="auto">
-                  <v-btn variant="tonal" v-if="showStepping" @click="previousStep" style="margin-right: 10px; padding: 5px;">{{ currentLanguage === 'SK' ? 'Naspäť' : 'Previous' }}</v-btn>
-                  <v-btn variant="tonal" v-if="showStepping" @click="nextStep" style="padding: 5px;">{{ currentLanguage === 'SK' ? 'Ďalej' : 'Next' }}</v-btn>
+                  <v-btn variant="tonal" v-if="showStepping" @click="previousStep" style="margin-right: 10px; padding: 5px;" :style="darkMode ? 'color: white;' : 'color:black;'"><v-icon :color="darkMode ? '#D500F9' : 'info'">mdi-chevron-left</v-icon>{{ currentLanguage === 'SK' ? 'Naspäť' : 'Previous' }}</v-btn>
+                  <v-btn variant="tonal" v-if="showStepping" @click="nextStep" style="padding: 5px;" :style="darkMode ? 'color: white;' : 'color:black;'">{{ currentLanguage === 'SK' ? 'Ďalej' : 'Next' }}<v-icon :color="darkMode ? '#D500F9' : 'info'">mdi-chevron-right</v-icon></v-btn>
                 </v-col>
               </v-row>
             </v-col>
           </v-row>
-          <v-row class="output-container" v-if="showOutput && showFullOutput"  :style="heightNastavenieOutput" style="margin:20px;max-height: 590px;">
+          <v-row class="output-container" v-if="showOutput && showFullOutput"  :style="heightNastavenieOutput" style="position:relative;margin:20px;max-height: 590px;">
             <v-btn v-if="showFullOutput" icon @click="fullscreenDialog = true" style="margin-left: 10px;">
                 <v-icon>mdi-fullscreen</v-icon>
             </v-btn>
-            <div class="output-row" v-for="index2 in Array.from({length: pocetKrokov+1}, (_, i) => i)" :key="index2">
+            <div class="output-row" v-for="index2 in Array.from({length: pocetKrokov+1}, (_, i) => i)" :key="index2" :class="{'backgroundGuessBLack' : darkMode}">
               <span style="display: inline-block">
                 <latex v-if="!showFullLine[index2]" :latex-string="`\\alpha_{${index2}} = \\langle {${prvaCastPrekladu[index2]}}`" style="display: inline-block;"/>
                 <span v-if="!showFullLine[index2] && pocetInstrukciiPrvyKrok[index2] > 4" @click="toggleText(index2)" style="cursor: pointer;display: inline-block; color:#1867c0;font-size: 30px;"> ... </span>
@@ -390,8 +407,8 @@
             </div>
           </v-row>
           <v-row ref="outputContainer"  class="output-container" v-if="showOutput && showStepping" style="position: relative;margin:20px;max-height: 554px;" :style="heightNastavenieOutput">
-            <div v-if="showGuessing" class="output-row" style="position: sticky;top: 0;background-color: white; z-index: 5;">
-              <v-row align="center" justify="start" no-gutters>
+            <div v-if="showGuessing" class="output-row" style="position: sticky;top: 0;background-color: white; z-index: 5;" >
+              <v-row align="center" justify="start" no-gutters :class="{'backgroundGuessBLack' : darkMode}">
                 <v-col cols="auto" >
                   <latex :latex-string="`\\alpha_{${currentIndex+1}} = \\langle`"></latex>
                 </v-col>
@@ -426,7 +443,8 @@
                   <latex v-if="currentIndex+1 < pocetKrokov" :latex-string="`\\rangle \\Rightarrow \\alpha_{${currentIndex+2}}`"></latex>
                 </v-col>
                 <v-col cols="12">
-                  <v-btn variant="elevated" @click="guessConfiguration" :disabled="currentIndex >= pocetKrokov">{{ currentLanguage === 'SK' ? 'Overiť' : 'Guess' }}<v-icon color="info">mdi-lightbulb</v-icon></v-btn>
+                  <v-btn variant="elevated" @click="guessConfiguration" :disabled="currentIndex >= pocetKrokov" :class="{'button-light': !darkMode, 'button-dark': darkMode}"
+                    >{{ currentLanguage === 'SK' ? 'Overiť' : 'Guess' }}<v-icon :color="darkMode ? '#D500F9' : 'info'">mdi-lightbulb</v-icon></v-btn>
                 </v-col>
                 <v-col cols="12">
                   <p v-if="correctGuess !== null" :type="correctGuess ? 'success' : 'error'" :style="correctGuess? 'color:green;' : 'color:red;'">
@@ -441,10 +459,10 @@
                 <v-divider style="margin-top:20px"></v-divider>
               </v-row>
             </div>
-            <div  class="output-row" v-for="index3 in Array.from({length: currentIndex + 1}, (_, i) => i)" :key="index3">
+            <div  class="output-row" v-for="index3 in Array.from({length: currentIndex + 1}, (_, i) => i)" :key="index3" :class="{'backgroundGuessBLack' : darkMode}">
               <span style="display: inline-block">
                 <latex v-if="!showFullLine[index3]" :latex-string="`\\alpha_{${index3}} = \\langle {${prvaCastPrekladu[index3]}}`" style="display: inline-block;"/>
-                <span v-if="!showFullLine[index3] && pocetInstrukciiPrvyKrok[index3] > 4" @click="toggleText(index3)" style="cursor: pointer;display: inline-block;color:#1867c0;font-size: 30px;"> ... </span>
+                <span v-if="!showFullLine[index3] && pocetInstrukciiPrvyKrok[index3] > 4" @click="toggleText(index3)" style="cursor: pointer;display: inline-block; color:#1867c0;font-size: 30px;"> ... </span>
                 <latex v-if="!showFullLine[index3] && index3 < pocetKrokov" :latex-string="`, {${zasobnikAStav[index3]}}, {${stavKazdyKrok[index3]}}\\rangle \\Rightarrow \\alpha_{${index3+1}}`" style="display: inline-block;"/>
                 <latex v-if="!showFullLine[index3] && index3 >= pocetKrokov" :latex-string="`, {${zasobnikAStav[index3]}}, {${stavKazdyKrok[index3]}} \\rangle`" style="display: inline-block;"/>
 
@@ -456,8 +474,8 @@
           </v-row>
 
           <v-dialog v-model="fullscreenDialog" hide-overlay transition="dialog-bottom-transition">
-            <v-card>
-              <v-toolbar dark color="primary" flat>
+            <v-card :class="{'backgroundGuessBLack' : darkMode}">
+              <v-toolbar dark :color="darkMode ? '#D500F9' : 'primary'" flat>
                 <v-btn icon dark @click="fullscreenDialog = false">
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
@@ -465,10 +483,10 @@
                 <v-spacer></v-spacer>
                 <v-btn dark @click="showStavy = !showStavy">{{ currentLanguage === 'SK' ? 'Zobraziť stavy' : 'Show States' }}</v-btn>
               </v-toolbar>
-              <v-expand-transition>
+              <v-expand-transition :class="{'backgroundGuessBLack' : darkMode}">
                   <v-card class="flex-shrink-0" v-if="showStavy" flat style="max-width: 400px; position: absolute; top: 64px; right:0; z-index: 5; border: 1px solid black">
                     <v-card-title>{{ currentLanguage === 'SK' ? 'Stavy' : 'States' }}</v-card-title>
-                    <v-table >
+                    <v-table :class="{'backgroundGuessBLack' : darkMode}">
                       <tbody >
                         <tr v-for="(state,index6) in filtrovaneStavy" :key="index6">
                             <td v-if="index6 == 0" style="max-width:200px">
@@ -498,22 +516,32 @@
           <v-col >
             <v-row>
               <v-col  cols="auto" >
-                <v-btn variant="elevated"  @click="hideStepping2" :class="!showStepping2 ? 'showWhole' : 'showPart'" style="margin-right: 10px; padding: 5px;">{{ currentLanguage === 'SK' ? 'Výsledok' : 'Whole translation' }}</v-btn>
+                <v-btn variant="elevated"  @click="hideStepping2" :class="{
+    'showPartDark': showStepping2 && darkMode,
+    'showPart': showStepping2 && !darkMode,
+    'showWholeDark': !showStepping2 && darkMode,
+    'showWhole': !showStepping2 && !darkMode
+  }" style="margin-right: 10px; padding: 5px;">{{ currentLanguage === 'SK' ? 'Výsledok' : 'Whole translation' }}</v-btn>
               </v-col>
               <v-col cols="auto">
-                <v-btn variant="elevated" style="padding: 5px;" @click="enableStepping2" :class="showStepping2 ? 'showWhole' : 'showPart'">{{ currentLanguage === 'SK' ? 'Krokovať' : 'Step by step' }}</v-btn>
+                <v-btn variant="elevated" style="padding: 5px;" @click="enableStepping2" :class="{
+    'showPartDark': !showStepping2 && darkMode,
+    'showPart': !showStepping2 && !darkMode,
+    'showWholeDark': showStepping2 && darkMode,
+    'showWhole': showStepping2 && !darkMode
+  }">{{ currentLanguage === 'SK' ? 'Krokovať' : 'Step by step' }}</v-btn>
               </v-col>   
             </v-row>
           </v-col>
         </v-row>
           <v-row class="controls">
           <v-col cols="auto">
-            <v-btn variant="tonal" v-if="showStepping2" @click="previousStep2" style="margin-right: 10px; padding: 5px;">{{ currentLanguage === 'SK' ? 'Naspať' : 'Previous' }}<v-icon color="info">mdi-chevron-left</v-icon></v-btn>
-            <v-btn variant="tonal" v-if="showStepping2" @click="nextStep2" style="margin-right: 10px;padding: 5px;">{{ currentLanguage === 'SK' ? 'Ďalej' : 'Next' }}<v-icon color="info">mdi-chevron-right</v-icon></v-btn>
+            <v-btn variant="tonal" v-if="showStepping2" @click="previousStep2" style="margin-right: 10px; padding: 5px;" :style="darkMode ? 'color: white;' : 'color:black;'" ><v-icon :color="darkMode ? '#D500F9' : 'info'">mdi-chevron-left</v-icon>{{ currentLanguage === 'SK' ? 'Naspať' : 'Previous' }}</v-btn>
+            <v-btn variant="tonal" v-if="showStepping2" @click="nextStep2" style="margin-right: 10px;padding: 5px;" :style="darkMode ? 'color: white;' : 'color:black;'">{{ currentLanguage === 'SK' ? 'Ďalej' : 'Next' }}<v-icon :color="darkMode ? '#D500F9' : 'info'">mdi-chevron-right</v-icon></v-btn>
           </v-col>
         </v-row>
-        <v-row class="output-container" :style="heightNastavenieOutput" style="margin:20px;">
-          <div v-for="(step, index) in displayedSteps" :key="index">
+        <v-row class="output-container" :style="heightNastavenieOutput" style="margin:20px;" >
+          <div v-for="(step, index) in displayedSteps" :key="index" :class="{'backgroundGuessBLack' : darkMode}">
               <span v-if="index == 0"> <latex :latexString="step"/></span>
               <span v-if="index > 0"> <latex :latexString="`= ${step}`"/></span>
             </div>
@@ -521,9 +549,9 @@
         </div>
       </v-col>
     </v-row>
-    
+    <Latex :latexString="stavNaTransformovanie"/>
     <CelkovyPreklad @update:preklad="handlePreklad" :poslednyKrok="output" :druhyKrok="druhyKrok"/>
-    <v-row class="ma-3" style="margin-top: 20px !important;" v-if="this.selectedTitle === 'Vykonanie kódu' && showOutput">
+    <v-row class="ma-3" style="margin-top: 20px !important;" v-if="this.selectedTitle === 'Vykonanie kódu' && showOutput" :class="{'backgroundGuessBLack' : darkMode}">
       <v-col cols="12">
           <h3 class="text-center">{{ currentLanguage === 'SK' ? 'Preklad programu do inštrukcií abstraktného stroja:' : 'Translation of the program into abstract machine instructions:' }}</h3>
       </v-col>
@@ -533,6 +561,7 @@
     </v-row>
   </div> 
 </template>
+
 
 <script>
 import MonacoEditor from './components/MonacoEditor.vue';
@@ -551,8 +580,17 @@ export default {
     PomocnikEN,
     CelkovyPreklad
   },
+  watch: {
+    currentLanguage(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.updateDarkModeInComponents();
+      }
+    }
+  },
   data() {
     return {
+      pomocnikKey:0,
+      darkMode: false,
       menu2:false,
       currentLanguage: 'SK',
       languages:[
@@ -671,6 +709,21 @@ export default {
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
+    updateDarkModeInComponents() {
+      if (this.currentLanguage === 'SK') {
+        this.$refs.pomocnik?.handleDarkModeChange(this.darkMode);
+      } else if (this.currentLanguage === 'EN') {
+        this.$refs.pomocnikEN?.handleDarkModeChange(this.darkMode);
+      }
+    },
+    toggleDarkMode(){
+      this.darkMode = !this.darkMode;
+      if (this.darkMode) {
+        document.body.style.backgroundColor = "#303030"; // tmavá téma
+      } else {
+        document.body.style.backgroundColor = "white"; // svetlá téma
+      }
+    },
     selectLanguage(language){
       this.currentLanguage = language.title;
       this.menu2 = false;
@@ -748,6 +801,9 @@ export default {
         this.correctGuess = true;
       }
       this.uhadnutieCislo = this.currentIndex+1;
+      this.guessInstrukcia = '';
+      this.guessZasobnik = '';
+      this.guessStav = '';
       this.nextStep();
     },
     showStackDialog(){
@@ -1350,6 +1406,7 @@ while !(x = 1) do (
     i := i*x;
     x := x-1
 )`;
+      
     },
     triggerFileInput() {
       this.$refs.fileInput.click(); 

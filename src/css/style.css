@@ -41,6 +41,12 @@
   margin: 10px 10px 10px 0px;
   padding: 0px 10px;
 }
+.variable-dark{
+  border: 2px solid #D500F9;
+  margin: 10px 10px 10px 0px;
+  padding: 0px 10px;
+  color: white;
+}
 
 @media (max-width: 960px) {
   .overflow {
@@ -51,7 +57,7 @@
 .output-container {
   display: block;
   overflow-y:auto;
-  height: fit-content;
+  
 }
 .guessing{
   width: 20%;
@@ -111,6 +117,16 @@
   background-color: rgb(24,103,192);
 }
 
+.showWholeDark{
+  color: white !important;
+  background-color: #D500F9;
+}
+
+.showPartDark{
+  color: white !important;
+  background-color: #212121;
+}
+
 .switch-container {
   display: flex;
   align-items: center; 
@@ -127,4 +143,31 @@
 .flag-icon{
   width:20px;
   height: auto;
+}
+
+.button-light-spustit {
+  background-color: #1867c0;
+  color: white;
+}
+
+.button-dark-spustit {
+  background-color: #D500F9 ;
+  color: white;
+}
+.buttonPremenne-light{
+  background-color: #1867c0;
+  color: white;
+}
+.button-dark{
+  background-color: #212121;
+  color: white;
+}
+
+.inputField-dark{
+  color: white;
+}
+
+.backgroundGuessBLack{
+  background-color: #303030;
+  color: white;
 }

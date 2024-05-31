@@ -14,7 +14,8 @@ export default {
   props: {
     value: String,
     fontSize: Number,
-    readonly: false
+    readonly: false,
+    darkMode: Boolean
   },
   watch: {
     fontSize(newSize) {
@@ -26,6 +27,14 @@ export default {
       if(this.editor){
         this.editor.setValue(newValue);
       }
+    },
+    darkMode(newValue){
+      if(this.editor){
+        const newTheme = newValue ? 'darkTheme' : 'lightTheme';
+        this.editor.updateOptions({ theme: newTheme });
+      }
+        
+      
     }
   },
    mounted() {
@@ -41,7 +50,7 @@ export default {
         }
       });
 
-      monaco.editor.defineTheme('myTheme', {
+      monaco.editor.defineTheme('lightTheme', {
         base: 'vs',
         inherit: true,
         rules: [
@@ -52,10 +61,26 @@ export default {
           'editor.lineHighlightBackground': '#B2EBF2',
         }
       });
+      monaco.editor.defineTheme('darkTheme', {
+        base: 'vs',
+        inherit: true,
+        rules: [
+          { token: 'modra', foreground: '#D500F9' }, 
+          { token: 'cervena', foreground: '#FFFFFF'}
+        ],
+        colors: {
+          'editor.lineHighlightBackground': '#303030',
+          'editor.background': '#424242',  // šedé pozadie
+          'editor.foreground': '#FFFFFF',
+          'editorCursor.foreground': '#FFFFFF',
+          'editorLineNumber.foreground': '#858585',
+          'editorLineNumber.activeForeground': '#D500F9' 
+        }
+      });
       this.editor = monaco.editor.create(this.$refs.editorContainer, {
         value: this.value,
         language: "myCustomLanguage",
-        theme: "myTheme", 
+        theme: this.darkMode ? 'darkTheme' : 'lightTheme', 
         fontSize: this.fontSize,
         minimap: {
           enabled: false
@@ -84,6 +109,7 @@ export default {
     handleEditorChange() {
       try {
         const content = this.editor.getValue().trim();
+        this.$emit('update:valueEditor', content);
         if (!content) {
           monaco.editor.setModelMarkers(this.editor.getModel(), 'owner', []);
           return; 
